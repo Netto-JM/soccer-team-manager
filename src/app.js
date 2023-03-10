@@ -1,4 +1,3 @@
-// src/app.js
 const express = require('express');
 
 const OK = 200;
@@ -7,8 +6,24 @@ const OK = 200;
 
 const app = express();
 
+const teams = [{
+    id: 1,
+    name: 'São Paulo Futebol Clube',
+    initials: 'SPF',
+  },
+  {
+    id: 2,
+    name: 'Clube Atlético Mineiro',
+    initials: 'CAM',
+  },
+];
+
 app.get('/', (req, res) => res.status(OK).json({
   message: 'Hello World!'
+}));
+
+app.get('/teams', (req, res) => res.status(200).json({
+  teams
 }));
 
 module.exports = app;
