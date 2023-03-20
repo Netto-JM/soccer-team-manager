@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 const { isValidTeam, existingId, apiCredentials } = require('./middlewares');
 const { teams } = require('./teams');
 
