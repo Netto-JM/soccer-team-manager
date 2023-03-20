@@ -1,72 +1,57 @@
 const express = require('express');
+const { isValidTeam, existingId } = require('./middlewares');
+const { teams } = require('./teams');
 
-const OK = 200;
-// const INTERNAL_SERVER_ERROR = 500;
-// const NOT_FOUND = 404;
+const HTTP_OK_STATUS = 200;
+const HTTP_CREATED_STATUS = 201;
+const HTTP_NO_CONTENT_STATUS = 204;
+const HTTP_BAD_REQUEST_STATUS = 400;
+// const HTTP_NOT_FOUND_STATUS = 404;
 
 const app = express();
 
 app.use(express.json());
 
 let nextId = 3;
-const teams = [
-  { id: 1, nome: 'São Paulo Futebol Clube', sigla: 'SPF' },
-  { id: 2, nome: 'Sociedade Esportiva Palmeiras', sigla: 'PAL' },
-];
 
-app.get('/teams', (req, res) => res.status(200).json({
+app.get('/teams', (_req, res) => res.status(HTTP_OK_STATUS).json({
   teams
 }));
 
-app.get('/teams/:id', (req, res) => {
+app.get('/teams/:id', existingId, (req, res) => {
   const { id } = req.params;
-
-  const myTeam = teams.find((team) => team.id === Number(id));
-
-  if (!myTeam) {
-    res.status(404).json({ message: 'Team not found' });
-  }
-
-  res.status(200).json({ myTeam });
+  const team = teams.find((team) => team.id === Number(id));
+  return res.status(HTTP_OK_STATUS).json({ team });
 });
 
-const validateTeam = (req, res, next) => {
-  const requiredProperties = ['nome', 'sigla'];
-  if (requiredProperties.every((property) => property in req.body)) {
-    next();
-  } else {
-    res.sendStatus(400);
-  }
-};
-
-app.post('/teams', validateTeam, (req, res) => {
+app.post('/teams', isValidTeam, (req, res) => {
   const team = { id: nextId, ...req.body };
   teams.push(team);
   nextId += 1;
-  res.status(201).json(team);
+  res.status(HTTP_CREATED_STATUS).json(team);
 });
 
-app.put('/teams/:id', validateTeam, (req, res) => {
+app.put('/teams/:id', existingId, isValidTeam, (req, res) => {
   const id = Number(req.params.id);
   const team = teams.find(t => t.id === id);
   if (team) {
     const index = teams.indexOf(team);
     const updated = { id, ...req.body };
     teams.splice(index, 1, updated);
-    res.status(201).json(updated);
+    res.status(HTTP_CREATED_STATUS).json(updated);
   } else {
-    res.sendStatus(400);
+    res.sendStatus(HTTP_BAD_REQUEST_STATUS);
   }
 });
 
-app.delete('/teams/:id', (req, res) => {
+app.delete('/teams/:id', existingId, (req, res) => {
   const id = Number(req.params.id);
   const team = teams.find(t => t.id === id);
   if (team) {
     const index = teams.indexOf(team);
     teams.splice(index, 1);
   }
-  res.sendStatus(204);
+  res.sendStatus(HTTP_NO_CONTENT_STATUS);
 });
 
 module.exports = app;
