@@ -7,6 +7,7 @@ const HTTP_OK_STATUS = 200;
 const HTTP_CREATED_STATUS = 201;
 const HTTP_NO_CONTENT_STATUS = 204;
 const HTTP_BAD_REQUEST_STATUS = 400;
+const HTTP_UNPROCESSABLE_ENTITY_STATUS = 422;
 // const HTTP_NOT_FOUND_STATUS = 404;
 
 const app = express();
@@ -27,6 +28,15 @@ app.get('/teams/:id', existingId, (req, res) => {
 });
 
 app.post('/teams', isValidTeam, (req, res) => {
+    if (
+      !req.teams.teams.includes(req.body.sigla)
+      &&
+      teams.every((t) => t.sigla !== req.body.sigla)
+    ) {
+      return res.status(HTTP_UNPROCESSABLE_ENTITY_STATUS).json({
+        message: 'There is already a team with this acronym'
+      });
+    }
   const team = { id: nextId, ...req.body };
   teams.push(team);
   nextId += 1;
