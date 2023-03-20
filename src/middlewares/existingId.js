@@ -11,11 +11,3 @@ const existingId = (req, res, next) => {
 };
 
 module.exports = { existingId };
-
-
-// usa o middleware
-app.get("/teams/:id", existingId, (req, res) => {
-  const id = Number(req.params.id);
-  const team = teams.find(t => t.id === id);
-  res.json(team);
-});
