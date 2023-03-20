@@ -6,6 +6,7 @@ const apiCredentials = async (req, res, next) => {
   const authorized = JSON.parse(authdata);
 
   if (token in authorized) {
+    req.teams = authorized[token];
     return next();
   } 
   res.sendStatus(401);
