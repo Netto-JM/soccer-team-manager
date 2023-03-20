@@ -1,5 +1,5 @@
 const express = require('express');
-const { isValidTeam, existingId } = require('./middlewares');
+const { isValidTeam, existingId, apiCredentials } = require('./middlewares');
 const { teams } = require('./teams');
 
 const HTTP_OK_STATUS = 200;
@@ -11,6 +11,7 @@ const HTTP_BAD_REQUEST_STATUS = 400;
 const app = express();
 
 app.use(express.json());
+app.use(apiCredentials);
 
 let nextId = 3;
 
